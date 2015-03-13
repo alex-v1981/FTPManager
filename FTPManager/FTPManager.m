@@ -205,8 +205,10 @@
                 // Converting kCFFTPResourceName entry to UTF8 to fix errors with Non-ASCII chars
                 NSString *nameEntry;
                 if ((nameEntry = entry[(id)kCFFTPResourceName])) {
-                    entry[(id)kCFFTPResourceName] = [[NSString alloc] initWithData:[nameEntry dataUsingEncoding:NSMacOSRomanStringEncoding allowLossyConversion:YES]
-                                                                          encoding:NSUTF8StringEncoding];
+                    NSString *utf8Str = [[NSString alloc] initWithData:[nameEntry dataUsingEncoding:NSMacOSRomanStringEncoding allowLossyConversion:YES]
+                                                              encoding:NSUTF8StringEncoding];
+                    if (utf8Str)
+                        entry[(id)kCFFTPResourceName] = utf8Str;
                 }
                 
                 [listingArray addObject:entry];
