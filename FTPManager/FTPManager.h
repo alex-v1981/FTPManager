@@ -274,6 +274,17 @@ typedef enum {
 - (BOOL) uploadFile:(NSURL*)fileURL toServer:(FMServer*)server;
 
 /**
+*  Uploads a file to a server. Existing remote files of the same name will be overwritten.
+*
+*  @param fileURL The local file which will be uploaded to the FTP server.
+*  @param fileName The specified file name.
+*  @param server  The FTP server which the file will be uploaded to.
+*
+*  @return YES if the upload was successful, NO otherwise.
+*/
+- (BOOL) uploadFile:(NSURL*)fileURL fileName:(NSString *)fileName toServer:(FMServer*)server;
+
+/**
  *  Uploads NSData to a server. Existing remote files of the same name will be overwritten.
  *
  *  @param data     The data which will be written to the FTP server.
