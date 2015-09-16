@@ -287,7 +287,8 @@
     return success;
 }
 
-- (BOOL) _uploadFile:(NSURL*)fileURL toServer:(FMServer*)server {
+- (BOOL) _uploadFile:(NSURL*)fileURL fileName:(NSString *)fileName toServer:(FMServer*)server
+{
     BOOL success = YES;
     
     action = _FMCurrentActionUploadFile;
@@ -295,7 +296,7 @@
     fileSize = [self fileSizeOf:fileURL];
     fileSizeProcessed = 0;
     
-    NSURL * finalURL = [[server.destination ftpURLForPort:server.port] URLByAppendingPathComponent:[fileURL lastPathComponent]];
+    NSURL * finalURL = [[server.destination ftpURLForPort:server.port] URLByAppendingPathComponent:fileName];
     And(success, (finalURL != nil));
     Check(success);
     
@@ -328,6 +329,12 @@
     
     return success;
 }
+
+- (BOOL) _uploadFile:(NSURL*)fileURL toServer:(FMServer*)server {
+    
+    return [self _uploadFile:fileURL fileName:[fileURL lastPathComponent] toServer:server];
+}
+
 - (BOOL) _createNewFolder:(NSString*)folderName atServer:(FMServer*)server {
     BOOL success = YES;
     
@@ -482,6 +489,25 @@
     }
     return RunInSeparateThread([self _uploadFile:fileURL toServer:server]);
 }
+
+- (BOOL) uploadFile:(NSURL *)fileURL fileName:(NSString *)fileName toServer:(FMServer *)server
+{
+    if (![self _checkFMServer:server]) {
+        return NO;
+    }
+    if (!fileURL) {
+        return NO;
+    }
+    if (!fileName) {
+        return  NO;
+    }
+    BOOL isDir;
+    if (![[NSFileManager defaultManager] fileExistsAtPath:fileURL.path isDirectory:&isDir] || isDir) {
+        return NO;
+    }
+    return RunInSeparateThread([self _uploadFile:fileURL fileName:fileName toServer:server]);
+}
+
 - (BOOL) createNewFolder:(NSString*)folderName atServer:(FMServer*)server {
     if (![self _checkFMServer:server]) {
         return NO;
